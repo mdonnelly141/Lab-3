@@ -1,15 +1,14 @@
-//
-//  main.c
-//  compSysProject3
-//
-//  Created by Michael Zeimbekakis on 11/9/16.
-//  Copyright © 2016 Michael Zeimbekakis. All rights reserved.
-//
+//  Matthew Donnelly, Michael Zeimbekakis, Matthew Bolognese
+//                      ECE 353
 
 #include <stdio.h>
 
+#DEFINE BOLTZ 8.617*0.0001
+
+
 int main(int argc, const char * argv[]) {
-    // insert code here...
-    printf("Hello, World!\n");
+    
+    printf(BOLTZ);
+    
     return 0;
 }
