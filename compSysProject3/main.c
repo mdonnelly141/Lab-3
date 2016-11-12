@@ -44,19 +44,21 @@ int main(int argc, const char * argv[]) {
 	int coreCount = 0;	//counter for current core
 	int col = 0;		//column counter
 	int row = 0;		//row counter
-	char c;				//holds characters for file reading
+	char c;			//holds characters for file reading
 	int numCores = 0;	//number of cores
 
 
 	FILE *paramFile = fopen(argv[1], "r"); // reads parameter File
     assert(paramFile != NULL); //check that file exists
     ///////////////////////GENERAL CASE FOR N CORES
-    /*while(c = getc(paramFile) && !(c = EOL)){ //checks that there are characters and that end of line hasn't been reached
+    while(c = getc(paramFile) && !(c = EOL)){ //checks that there are characters and that end of line hasn't been reached
     	if(c = ' ') 
     		numCores++; //count core
     }
-    numCores+=1; //count last core, holds total number of cores*/   
-    numCores = 4; //hardcoded 4 core example
+    numCores+=1; //count last core, holds total number of cores   
+    //numCores = 4; //hardcoded 4 core example
+	rewind(paramFile);
+	printf("%d\n", numCores);
 
     //////////////ARRAY ESTABLISHMENT/////////////////////////////
 
@@ -73,7 +75,7 @@ int main(int argc, const char * argv[]) {
 	
     FILE *powerFile = fopen(argv[2], "r"); //Test File Input
     assert(powerFile != NULL); //Check to see file exists
-
+	
     //reading from power file and populating array
     
 
