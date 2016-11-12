@@ -15,82 +15,90 @@ double ambient = 300;			//default ambient temperature of 300k
 
 
 //////////////////////Runge-Kutta Algorithm//////////////////////////////////
-double *rk(double numCores){   //returns pointer	
-	for(int i=0; i<numCores; i++)
-		k1 = h*f(i, res[row][col], cap[coreCount], pow[coreCount]);  
-
-
-	
-    	
-}
+/*double *rk(int *numCores, double c[], double r[][], double p[]){   //returns pointer	
+	/*for(int i=0; i<*numCores; i++){ //handles interations for K(i,j)
+		if(row = col)  //checks for core comparison to itself
+			;		   //don't calculate if core is compared to itself	
+		else
+			k1 = h*f(*numCores, res[row][col], cap[i], pow[i]);  
+			i++;
+		}
+	}	*/
+//}
 /////////////////////////////////////////////////////////////////////////////
 
 //////////////////////Functions utilized within RK/////////////////////////// 
-double f(int core, res[row][col], cap[coreCount], pow[coreCount]){
-	k = (P - sum())/R;
-	return k;
-}
+/*double f(int *currCore, double res[row][col], double cap[i], double pow[i]){
+		double k;
+		/*if(row = col)  //checks for core comparison to itself
+			;		   //don't calculate if core is compared to itself	
+		else
+			double k = (p - sum(currCore))/r;*/
+	//return k;
+//}
 
-double sum(double core, double relativeCore){
-	double ans = 0;
-	for(int si = 0; si < core; si++){
-		ans = temp[si] - ambient;
-	}
-	return ans;
-}
+//double sum(int currCore){
+//	double ans;
+//	int curr = currCore;
+//	for(int si = 0; si < core; si++){
+//		ans = temp[si] - ambient;
+//	}
+//	return ans;
+//}
 ////////////////////////////////////////////////////////////////////////////
 
 int main(int argc, const char * argv[]) {
 	int coreCount = 0;	//counter for current core
 	int col = 0;		//column counter
 	int row = 0;		//row counter
-	char c;			//holds characters for file reading
+	char c;				//holds characters for file reading
 	int numCores = 0;	//number of cores
 
-
-	FILE *paramFile = fopen(argv[1], "r"); // reads parameter File
-    assert(paramFile != NULL); //check that file exists
-    ///////////////////////GENERAL CASE FOR N CORES
-    while(c = getc(paramFile) && !(c = EOL)){ //checks that there are characters and that end of line hasn't been reached
-    	if(c = ' ') 
+	//////////////initial read to find number of cores
+	FILE *iparamFile = fopen(argv[1], "r"); // reads parameter File
+    assert(iparamFile != NULL); //check that file exists
+    while((c = getc(iparamFile)) != EOL){ //checks that there are characters and that end of line hasn't been reached
+    	if(c == ' ') 
     		numCores++; //count core
     }
-    numCores+=1; //count last core, holds total number of cores   
-    //numCores = 4; //hardcoded 4 core example
-	rewind(paramFile);
-	printf("%d\n", numCores);
+    numCores+=1; //count last core, holds total number of cores*/   
+    printf("Number of cores = %d\n", numCores);
+    fclose(iparamFile); //Closes parameter file
+    //////////////end initial read 
 
-    //////////////ARRAY ESTABLISHMENT/////////////////////////////
-
+    FILE *paramFile = fopen(argv[1], "r"); // reads parameter File
+    assert(paramFile != NULL); //check that file exists
     //double y[4]; //holds dy/dt values
     int *y; //pointer for dy/dt values
     y = (int *)malloc(numCores*sizeof(double)); //y points to starting address of array of size numCores, values are doubles
-    double cap[numCores]; //holds thermal capacitances
-    double pow[numCores]; //holds power values for specific time interval
-	double res[numCores][numCores]; //holds thermal resistances
-	double temp[numCores]; //holds starting temperatures for all cores
-	for(int ti = 0; ti < numCores; ti++){ //fills array
+    double cap[numCores]; 						//holds thermal capacitances
+    int ca;
+    for(ca= 0; ca<numCores; ca++)
+    	fscanf(paramFile, "%lf", &cap[ca]); //count core
+    int pr;
+    for(pr =0;pr<numCores;pr++){
+    	printf("values in array %lf\n", cap[pr]);
+    }
+    double pow[numCores]; 						//holds power values for specific time interval
+	double res[numCores][numCores];				//holds thermal resistances
+	double temp[numCores];						//holds starting temperatures for all cores 
+	/*for(int ti = 0; ti < numCores; ti++)		//fills array
 		temp[ti] = ambient;
-	}
+	 
 	
     FILE *powerFile = fopen(argv[2], "r"); //Test File Input
     assert(powerFile != NULL); //Check to see file exists
-	
+
     //reading from power file and populating array
     
 
 
     //let the spicy begin, call RK and obtain results
-    for(int steps = 0; steps < 200; steps++){  //200 iterations; 200h = 1 run through [0-Tau] and subsequent intervals
-    	rk(numCores){
+    for(int steps = 0; steps < 200; steps++){  //200 iterations; 200*h = 1 run through [0-Tau], (Tau - 2Tau], etc
+    	rk(%numCores)
 
-    	}
+    	
     }
-
-
-
-
-
 
 
 
@@ -102,10 +110,8 @@ int main(int argc, const char * argv[]) {
 
 	fclose(paramFile); //Closes parameter file
     fclose(powerFile); //Closes power file
-	fclose(outputFile);//Closes output file
+	fclose(outputFile);//Closes output file*/
 
-
-    
     
     return 0;
-}
+}//end main
