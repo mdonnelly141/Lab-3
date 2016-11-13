@@ -79,7 +79,6 @@ int main(int argc, const char * argv[]) {
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%THERMAL CAPACITANCES
     /*double cap[numCores]; //holds C values
     int ca;
-
     //fill capacitance array
     for(ca= 0; ca<(numCores); ca++)
     	fscanf(paramFile, "%lf", &cap[ca]);
@@ -89,10 +88,16 @@ int main(int argc, const char * argv[]) {
     } //DEBUGGGGG*/
     double *cap;
     cap = (double *)malloc(numCores*sizeof(double));
+    int catch = 0;
     int ca = 0;
-    while(fscanf(paramFile, "%lf", &cap[ca])!=EOF){
+    while(catch == 0 && fscanf(paramFile, "%lf", &cap[ca])){
+    	printf("cap values %lf\n", cap[ca]);
     	ca++;
+    	if(ca == numCores)
+    		catch = 1;
     }
+    
+    
 	//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%THERMAL RESISTANCES
     /*double res[numCores+1][numCores+1];	//Holds R values
 	int cr;
@@ -100,10 +105,9 @@ int main(int argc, const char * argv[]) {
 	for(cr = 0; cr<numCores+1; cr++){ //row designates a core
 		for(crr = 0; crr<numCores+1; crr++) //column designates relationship to another core
 			fscanf(paramFile, "%lf", &res[cr][crr]);
-
 	}*/
 	double **res;
-    res = (double**)malloc((numCores+1)*sizeof(double*));
+    res = (double**)malloc((numCores)*sizeof(double*));
     int i = 0;
     for(i=0; i<numCores+1; i++){
         res[i] = (double*)malloc((numCores+1)*sizeof(double));
@@ -112,7 +116,7 @@ int main(int argc, const char * argv[]) {
     int crr = 0;
     for(cr = 0; cr<numCores+1; cr++){ //row designates a core
         for(crr = 0; crr<numCores+1; crr++) //column designates relationship to another core
-            fscanf(paramFile, "%lf", &res[cr][crr]);
+            fscanf(paramFile, "%lf", &(res[cr][crr]));
         
     }
 	// DEBUG
@@ -154,9 +158,6 @@ int main(int argc, const char * argv[]) {
 	double *temp;
 	temp = (double *)malloc(numCores*sizeof(double));
    	int ti = 0;
-        	//while(fscanf(paramFile, "%lf", &temp[ti])!=EOL){
-        	//	ti++;
-   			//}
 
 	fclose(paramFile);
 
@@ -172,11 +173,15 @@ int main(int argc, const char * argv[]) {
 	/*for(pi = 0; pi<numCores;pi++)
 		printf("UNLIMITED POWER is %lf\n", pow[pi]);*/
 	double *pow;
-        	pow = (double *)malloc(numCores*sizeof(double));
-        	int pi= 0;
-        	while(fscanf(powFile, "%lf", &pow[pi])!=EOF){
-        		pi++;
-        	}
+    pow = (double *)malloc(numCores*sizeof(double));
+    int pi= 0;
+    int catchp = 0;
+    while(catchp == 0 && fscanf(powFile, "%lf", &pow[pi])){
+    	printf("power values %lf\n", pow[pi]);
+    	pi++;
+    	if(pi == numCores)
+    		catchp = 1;
+    }
 
 	//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -185,14 +190,14 @@ int main(int argc, const char * argv[]) {
     y = (int *)malloc(numCores*sizeof(double)); //y points to starting address of array of size numCores, values are doubles
         
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% AMBIENT TEMP READING
-    if(argc < 3)
+    if(argc < 4)
     	ambient = ambient; //use default room temperature = 300k
     else{
     	FILE *ambFile = fopen(argv[3], "r");
     	assert(ambFile != NULL);
     	fscanf(ambFile, "%lf", &ambient);
     }
-    printf("%lf\n", ambient);
+    printf("room temp is %lf\n", ambient);
 
 
     //let the spicy begin, call RK and obtain results
@@ -203,9 +208,6 @@ int main(int argc, const char * argv[]) {
 
     	
     //*rk(int *numCores, double c[], double r[][], double p[]){  
-
-
-
 
 
     /*FILE *outputFile = fopen(argv[3], "w"); //Test File Output
