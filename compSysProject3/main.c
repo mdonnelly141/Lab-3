@@ -8,8 +8,8 @@
 #include <string.h>
 
 #define BOLTZ 8.617*pow(10,-5)  //Boltzmann Constant
-#define EA = 0.8				//Activation Energy
-#define h = 0.005				//step size for RK Algorithm
+#define EA 0.8				//Activation Energy
+#define h 0.005				//step size for RK Algorithm
 const char EOL = '\n';			//end of line character
 double ambient = 300;			//default ambient temperature of 300k
 double startT = 300;			//starting temperature of cores @ 300k
@@ -17,34 +17,59 @@ double *cap;					//array for thermal capacitances
 double **res;					//array for thermal resistances
 double *temp;					//array for temperatures
 double *power;					//array for power values
-double *karr;					//array for intermediate k approximations
-karr = (double*)malloc(4*sizeof(double));
+double **karr;					//array for intermediate k approximations
 
+double f(int numcore, int core);
+double sum(int total, int currCore);
 
 //////////////////////Runge-Kutta Algorithm//////////////////////////////////
 double *rk(int numCores){   //returns pointer	
-	karr[0] = h*f();
-	//karr[1] = h*f();
-	//karr[2] = h*f();
-	//karr[3] = h*f();
+	int test;
+	int run;
+	for(run = 0; run < numCores; run++)
+		karr[0][run] = h*f(numCores, run, test);
+
+	for(run = 0; run < numCores; run++)
+		karr[1][run] = h*f(numCores, run, test);
+
+	for(run = 0; run < numCores; run++)
+		karr[2] = h*f(numCores; run++);
+	
+	for(run = 0; run < numCores; run++)
+		karr[3] = h*f(numCores; run++);
+
+	double yF;
+	
+
+
 }	
 /////////////////////////////////////////////////////////////////////////////
 
 //////////////////////Functions utilized within RK/////////////////////////// 
-double f(int *currCore, double res[row][col], double cap[i], double pow[i]){
-	double k = pow[i] = 
+double f(int numcore, int core, int casey){
+	double k = 0;
+	k = sum(numcore, core, casey);
+	k = (power[core] - k)/cap[core];
 	return k;
 }
 
-//double sum(int currCore){
-//	double ans;
-//	int curr = currCore;
-//	int si;
-//	for(si = 0; si < core; si++){
-//		ans = temp[si] - ambient;
-//	}
-//	return ans;
-//}
+double sum(int total, int currCore, int casex){
+	int cou;
+	double ans;
+	for(cou = 0; cou<total; cou++){
+		if(currCore == cou)
+			;
+		if(casex = 0) //calculate sum for K1
+			ans += (temp[currCore] - temp[cou])/res[currCore][cou];
+		if(casex = 1) //calculate sum for k2
+			ans += (((temp[currCore]+(karr[0][currCore])/2)-(temp[cou]+(karr[0][cou])/2))/res[currCore][cou];
+		if(casex = 2) //calculate sum for k3
+			ans += (((temp[currCore]+(karr[1][currCore])/2)-(temp[cou]+(karr[1][cou])/2))/res[currCore][cou];
+		if(casex = 3) //calculate sum for k4
+			ans += ((temp[currCore]+karr[2][currCour])-(temp[cou]+karr[2][cou]))/res[currCore][cou];
+	}
+	return ans;
+}
 ////////////////////////////////////////////////////////////////////////////
 
 int main(int argc, const char * argv[]) {
@@ -53,6 +78,7 @@ int main(int argc, const char * argv[]) {
 	int row = 0;		//row counter
 	char c;				//holds characters for file reading
 	int numCores = 0;	//number of cores
+	
 
 	//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%initial read to find number of cores
 	FILE *iparamFile = fopen(argv[1], "r"); // reads parameter File
@@ -68,8 +94,14 @@ int main(int argc, const char * argv[]) {
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%end initial read 
     FILE *paramFile = fopen(argv[1], "r"); // reads parameter File
     assert(paramFile != NULL); //check that file exists
-    
 
+
+    karr = (double**)calloc(4, sizeof(double*)); //build 2d array for K values
+    int kc = 0;
+    for(kc = 0; kc<numCores; kc++)
+    	karr[kc] = (double*)calloc(numCores, sizeof(double));
+
+        
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%THERMAL CAPACITANCES
     /*double cap[numCores]; //holds C values
     int ca;
@@ -134,14 +166,8 @@ int main(int argc, const char * argv[]) {
 	for(ack = 0; ack <numCores+1;ack++){
 		printf("%lf ", res[4][ack]);
 	}
-	printf("\n"); //%%%%%%%%%%%%%%%%%%%
+	printf("\n"); //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	
-	/*int pr;
-	int prr;
-    for(pr =0;pr<numCores;pr++){
-    	for(prr = 0; pr<numCores; prr++)
-    		printf("values in array %lf\n", cap[pr]);
-    } //DEBUGGGGG*/
 	//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% STARTING CORE TEMPS 
 	/*double temp[numCores];	//holds temp values
 	int ti;
@@ -192,7 +218,7 @@ int main(int argc, const char * argv[]) {
     	fscanf(ambFile, "%lf", &ambient);
     }
     printf("room temp is %lf\n", ambient);
-
+    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     //let the spicy begin, call RK and obtain results
     int steps;
