@@ -103,13 +103,18 @@ int main(int argc, const char * argv[]) {
 
 	}*/
 	double **res;
-        	res = (double **)malloc((numCores+1)*(numCores+1)*sizeof(double));
-        	int cr = 0;
-        	int crr = 0;
-        	while(fscanf(paramFile, "%lf", &res[cr][crr])!=EOF){
-        		cr++;
-        		crr++;
-        	}
+    res = (double**)malloc((numCores+1)*sizeof(double*));
+    int i = 0;
+    for(i=0; i<numCores+1; i++){
+        res[i] = (double*)malloc((numCores+1)*sizeof(double));
+    }
+    int cr = 0;
+    int crr = 0;
+    for(cr = 0; cr<numCores+1; cr++){ //row designates a core
+        for(crr = 0; crr<numCores+1; crr++) //column designates relationship to another core
+            fscanf(paramFile, "%lf", &res[cr][crr]);
+        
+    }
 	// DEBUG
 	int ack;
 	for(ack = 0; ack <numCores+1;ack++){

@@ -23,9 +23,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		C03C350F1DD81F1000F3C12D /* amb.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = amb.txt; path = compSysProject3/amb.txt; sourceTree = "<group>"; };
-		C03C35101DD81F1000F3C12D /* param.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = param.txt; path = compSysProject3/param.txt; sourceTree = "<group>"; };
-		C03C35111DD81F1000F3C12D /* pow.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = pow.txt; path = compSysProject3/pow.txt; sourceTree = "<group>"; };
+		C03C350F1DD81F1000F3C12D /* amb.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = amb.txt; sourceTree = "<group>"; };
+		C03C35101DD81F1000F3C12D /* param.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = param.txt; sourceTree = "<group>"; };
+		C03C35111DD81F1000F3C12D /* pow.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = pow.txt; sourceTree = "<group>"; };
 		C04F49E71DD3C1BB00592A6B /* compSysProject3 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = compSysProject3; sourceTree = BUILT_PRODUCTS_DIR; };
 		C04F49EA1DD3C1BB00592A6B /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -44,9 +44,6 @@
 		C04F49DE1DD3C1BA00592A6B = {
 			isa = PBXGroup;
 			children = (
-				C03C350F1DD81F1000F3C12D /* amb.txt */,
-				C03C35101DD81F1000F3C12D /* param.txt */,
-				C03C35111DD81F1000F3C12D /* pow.txt */,
 				C04F49E91DD3C1BB00592A6B /* compSysProject3 */,
 				C04F49E81DD3C1BB00592A6B /* Products */,
 			);
@@ -63,6 +60,9 @@
 		C04F49E91DD3C1BB00592A6B /* compSysProject3 */ = {
 			isa = PBXGroup;
 			children = (
+				C03C350F1DD81F1000F3C12D /* amb.txt */,
+				C03C35101DD81F1000F3C12D /* param.txt */,
+				C03C35111DD81F1000F3C12D /* pow.txt */,
 				C04F49EA1DD3C1BB00592A6B /* main.c */,
 			);
 			path = compSysProject3;
