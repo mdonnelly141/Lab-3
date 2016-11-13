@@ -103,8 +103,8 @@ int main(int argc, const char * argv[]) {
 			fscanf(paramFile, "%lf", &res[cr][crr]);
 
 	}*/
-	double *res;
-        	res = (double *)malloc((numCores+1)*(numCores+1)*sizeof(double));
+	double **res;
+        	res = (double **)malloc((numCores+1)*(numCores+1)*sizeof(double));
         	int cr = 0;
         	int crr = 0;
         	while(fscanf(paramFile, "%lf", &res[cr][crr])!=EOL){
