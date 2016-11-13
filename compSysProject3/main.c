@@ -8,40 +8,40 @@
 #include <string.h>
 
 #define BOLTZ 8.617*pow(10,-5)  //Boltzmann Constant
-#define EA 0.8				//Activation Energy
-#define h 0.005				//step size for RK Algorithm
+#define EA 0.8                  //Activation Energy
+#define h 0.005                 //step size for RK Algorithm
 const char EOL = '\n';			//end of line character
 double ambient = 300;			//default ambient temperature of 300k
 double startT = 300;			//starting temperature of cores @ 300k
 double *cap;					//array for thermal capacitances
+double *y;                      //dy/dt value outputs
 double **res;					//array for thermal resistances
 double *temp;					//array for temperatures
 double *power;					//array for power values
 double **karr;					//array for intermediate k approximations
 
-double f(int numcore, int core);
-double sum(int total, int currCore);
+double f(int numcore, int core, int casey);
+double sum(int total, int currCore, int casex);
 
 //////////////////////Runge-Kutta Algorithm//////////////////////////////////
-double *rk(int numCores){   //returns pointer	
+double rk(int numCores, double time, double yi){   //returns value
 	int test;
 	int run;
 	for(run = 0; run < numCores; run++)
-		karr[0][run] = h*f(numCores, run, test);
+		karr[0][run] = time*f(numCores, run, test);
 
 	for(run = 0; run < numCores; run++)
-		karr[1][run] = h*f(numCores, run, test);
+		karr[1][run] = time*f(numCores, run, test);
 
 	for(run = 0; run < numCores; run++)
-		karr[2] = h*f(numCores; run++);
+		karr[2][run] = time*f(numCores, run, test);
 	
 	for(run = 0; run < numCores; run++)
-		karr[3] = h*f(numCores; run++);
-
-	double yF;
-	
-
-
+		karr[3][run] = time*f(numCores, run, test);
+    
+    double yN  = yi+(karr[0][numCores-1]+2*karr[1][numCores-1]+2*karr[3][numCores-1]+karr[3][numCores-1])/6;
+    
+    return yN;
 }	
 /////////////////////////////////////////////////////////////////////////////
 
@@ -59,14 +59,14 @@ double sum(int total, int currCore, int casex){
 	for(cou = 0; cou<total; cou++){
 		if(currCore == cou)
 			;
-		if(casex = 0) //calculate sum for K1
+		if(casex == 0) //calculate sum for K1
 			ans += (temp[currCore] - temp[cou])/res[currCore][cou];
-		if(casex = 1) //calculate sum for k2
-			ans += (((temp[currCore]+(karr[0][currCore])/2)-(temp[cou]+(karr[0][cou])/2))/res[currCore][cou];
-		if(casex = 2) //calculate sum for k3
-			ans += (((temp[currCore]+(karr[1][currCore])/2)-(temp[cou]+(karr[1][cou])/2))/res[currCore][cou];
-		if(casex = 3) //calculate sum for k4
-			ans += ((temp[currCore]+karr[2][currCour])-(temp[cou]+karr[2][cou]))/res[currCore][cou];
+		if(casex == 1) //calculate sum for k2
+			ans += (((temp[currCore]+(karr[0][currCore])/2)-(temp[cou]+(karr[0][cou])/2))/res[currCore][cou]);
+		if(casex == 2) //calculate sum for k3
+			ans += (((temp[currCore]+(karr[1][currCore])/2)-(temp[cou]+(karr[1][cou])/2))/res[currCore][cou]);
+		if(casex == 3) //calculate sum for k4
+			ans += ((temp[currCore]+karr[2][currCore])-(temp[cou]+karr[2][cou]))/res[currCore][cou];
 	}
 	return ans;
 }
@@ -108,7 +108,7 @@ int main(int argc, const char * argv[]) {
     //fill capacitance array
     for(ca= 0; ca<(numCores); ca++)
     	fscanf(paramFile, "%lf", &cap[ca]);
-    /*int pr;
+    int pr;
     for(pr =0;pr<numCores;pr++){
     	printf("values in array %lf\n", cap[pr]);
     } //DEBUGGGGG*/
@@ -206,8 +206,8 @@ int main(int argc, const char * argv[]) {
 	//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     //double y[4]; //holds dy/dt values
-    int *y; //pointer for dy/dt values
-    y = (int *)malloc(numCores*sizeof(double)); //y points to starting address of array of size numCores, values are doubles
+    //int *y; //pointer for dy/dt values
+    y = (double *)malloc(numCores*sizeof(double)); //y points to starting address of array of size numCores, values are doubles
         
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% AMBIENT TEMP READING
     if(argc < 4)
@@ -222,8 +222,10 @@ int main(int argc, const char * argv[]) {
 
     //let the spicy begin, call RK and obtain results
     int steps;
-    for(steps = 0; steps < 200; steps++){  //200 iterations; 200*h = 1 run through [0-Tau], (Tau - 2Tau], etc
-    	*rk(numCores);
+    double time = 0;
+    for(steps = 0; steps < (1/h); steps++){  //200 iterations; 200*h = 1 run through [0-Tau], [Tau - 2Tau], etc
+    	y[steps] = rk(numCores,time,y[steps-1]);
+        time += h;
     }
 
     	
