@@ -16,9 +16,12 @@ double startT = 300;			//starting temperature of cores @ 300k
 
 
 //////////////////////Runge-Kutta Algorithm//////////////////////////////////
-/*double *rk(int *numCores, double *c[], double *r[][], double *p[]){   //returns pointer	
-	int i;
-	for(i=0; i<*numCores; i++){ //handles interations for K(i,j)
+//*double *rk(int numCores, double c[], double r[], double p[]){   //returns pointer	
+	/*int i;
+	row = 0; //start at first row
+	printf("%lf", c[row]);*/
+	/*for(i=0; i<*numCores; i++){ //handles interations for K(i,j)
+		col = i;
 		if(row = col)  //checks for core comparison to itself
 			;		   //don't calculate if core is compared to itself	
 		else{
@@ -74,8 +77,9 @@ int main(int argc, const char * argv[]) {
     
 
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%THERMAL CAPACITANCES
-    double cap[numCores]; //holds C values
+    /*double cap[numCores]; //holds C values
     int ca;
+
     //fill capacitance array
     for(ca= 0; ca<(numCores); ca++)
     	fscanf(paramFile, "%lf", &cap[ca]);
@@ -83,15 +87,31 @@ int main(int argc, const char * argv[]) {
     for(pr =0;pr<numCores;pr++){
     	printf("values in array %lf\n", cap[pr]);
     } //DEBUGGGGG*/
+        	double *cap;
+        	cap = (double *)malloc(numCores*sizeof(double));
+        	int ca = 0;
+        	while(fscanf(paramFile, "%lf", &cap[ca])!=EOL){
+        		ca++;
+        	}
 
 	//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%THERMAL RESISTANCES
-    double res[numCores+1][numCores+1];	//Holds R values
+    /*double res[numCores+1][numCores+1];	//Holds R values
 	int cr;
 	int crr;	//fill resistance array
 	for(cr = 0; cr<numCores+1; cr++){ //row designates a core
 		for(crr = 0; crr<numCores+1; crr++) //column designates relationship to another core
 			fscanf(paramFile, "%lf", &res[cr][crr]);
-	}
+
+	}*/
+	double *res;
+        	res = (double *)malloc((numCores+1)*(numCores+1)*sizeof(double));
+        	int cr = 0;
+        	int crr = 0;
+        	while(fscanf(paramFile, "%lf", &res[cr][crr])!=EOL){
+        		cr++;
+        		crr++;
+        	}
+
 	// DEBUG
 	/*int ack;
 	for(ack = 0; ack <numCores+1;ack++){
@@ -122,12 +142,18 @@ int main(int argc, const char * argv[]) {
     		printf("values in array %lf\n", cap[pr]);
     } //DEBUGGGGG*/
 	//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% STARTING CORE TEMPS 
-	double temp[numCores];	//holds temp values
+	/*double temp[numCores];	//holds temp values
 	int ti;
 	for(ti = 0; ti < numCores; ti++)	//fills array
-		temp[ti] = startT;
+		temp[ti] = startT;*/
 	/*for(ti = 0; ti<numCores;ti++)
 		printf("Core temp is %lf\n", temp[ti]); //DEBUGGG*/ 
+	double *temp;
+	temp = (double *)malloc(numCores*sizeof(double));
+   	int ti = 0;
+        	//while(fscanf(paramFile, "%lf", &temp[ti])!=EOL){
+        	//	ti++;
+   			//}
 
 	fclose(paramFile);
 
@@ -136,14 +162,25 @@ int main(int argc, const char * argv[]) {
 	FILE *powFile = fopen(argv[2], "r"); // reads power file
     assert(powFile != NULL); //check that file exists
 
-	double pow[numCores]; 	
+	/*double pow[numCores]; 	
 	int pi;
 	for(pi = 0; pi<numCores; pi++)
-		fscanf(powFile, "%lf", &pow[pi]);
+		fscanf(powFile, "%lf", &pow[pi]);*/
 	/*for(pi = 0; pi<numCores;pi++)
 		printf("UNLIMITED POWER is %lf\n", pow[pi]);*/
+	double *pow;
+        	pow = (double *)malloc(numCores*sizeof(double));
+        	int pi= 0;
+        	while(fscanf(powFile, "%lf", &pow[pi])!=EOL){
+        		pi++;
+        	}
+        	int abc;
+        	for(abc = 0; abc<numCores;abc++){
+        		printf("%lf", pow[abc]);
+        	}
 
 
+	//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     //double y[4]; //holds dy/dt values
     int *y; //pointer for dy/dt values
@@ -166,7 +203,6 @@ int main(int argc, const char * argv[]) {
 
     /*FILE *outputFile = fopen(argv[3], "w"); //Test File Output
     assert(powerFile != NULL); //check to see file exists
-
 	//writing to file stufferoni*/
 
     return 0;
