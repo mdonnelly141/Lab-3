@@ -13,6 +13,10 @@
 const char EOL = '\n';			//end of line character
 double ambient = 300;			//default ambient temperature of 300k
 double startT = 300;			//starting temperature of cores @ 300k
+double *cap;					//array for thermal capacitances
+double **res;					//array for thermal resistances
+double *temp;					//array for temperatures
+double *power;					//array for power values
 
 
 //////////////////////Runge-Kutta Algorithm//////////////////////////////////
@@ -86,7 +90,7 @@ int main(int argc, const char * argv[]) {
     for(pr =0;pr<numCores;pr++){
     	printf("values in array %lf\n", cap[pr]);
     } //DEBUGGGGG*/
-    double *cap;
+    
     cap = (double *)malloc(numCores*sizeof(double));
     int catch = 0;
     int ca = 0;
@@ -106,7 +110,7 @@ int main(int argc, const char * argv[]) {
 		for(crr = 0; crr<numCores+1; crr++) //column designates relationship to another core
 			fscanf(paramFile, "%lf", &res[cr][crr]);
 	}*/
-	double **res;
+	
     res = (double**)malloc((numCores)*sizeof(double*));
     int i = 0;
     for(i=0; i<numCores+1; i++){
@@ -155,7 +159,7 @@ int main(int argc, const char * argv[]) {
 		temp[ti] = startT;*/
 	/*for(ti = 0; ti<numCores;ti++)
 		printf("Core temp is %lf\n", temp[ti]); //DEBUGGG*/ 
-	double *temp;
+	
 	temp = (double *)malloc(numCores*sizeof(double));
    	int ti = 0;
 
@@ -172,12 +176,12 @@ int main(int argc, const char * argv[]) {
 		fscanf(powFile, "%lf", &pow[pi]);*/
 	/*for(pi = 0; pi<numCores;pi++)
 		printf("UNLIMITED POWER is %lf\n", pow[pi]);*/
-	double *pow;
-    pow = (double *)malloc(numCores*sizeof(double));
+	
+    power = (double *)malloc(numCores*sizeof(double));
     int pi= 0;
     int catchp = 0;
-    while(catchp == 0 && fscanf(powFile, "%lf", &pow[pi])){
-    	printf("power values %lf\n", pow[pi]);
+    while(catchp == 0 && fscanf(powFile, "%lf", &power[pi])){
+    	printf("power values %lf\n", power[pi]);
     	pi++;
     	if(pi == numCores)
     		catchp = 1;
@@ -203,7 +207,7 @@ int main(int argc, const char * argv[]) {
     //let the spicy begin, call RK and obtain results
     /*int steps;
     for(steps = 0; steps < 200; steps++){  //200 iterations; 200*h = 1 run through [0-Tau], (Tau - 2Tau], etc
-    	*rk(%numCores, %cap[], %res[][], %pow[]);
+    	*rk(%numCores, %cap, %res, %pow);
     }*/
 
     	
