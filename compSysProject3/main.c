@@ -70,8 +70,8 @@ int main(int argc, const char * argv[]) {
     numCores+=1; //count last core, holds total number of cores*/   
     printf("Number of cores = %d\n", numCores);
     fclose(iparamFile); //Closes parameter file
-    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%end initial read 
 
+    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%end initial read 
     FILE *paramFile = fopen(argv[1], "r"); // reads parameter File
     assert(paramFile != NULL); //check that file exists
     
@@ -87,13 +87,12 @@ int main(int argc, const char * argv[]) {
     for(pr =0;pr<numCores;pr++){
     	printf("values in array %lf\n", cap[pr]);
     } //DEBUGGGGG*/
-        	double *cap;
-        	cap = (double *)malloc(numCores*sizeof(double));
-        	int ca = 0;
-        	while(fscanf(paramFile, "%lf", &cap[ca])!=EOL){
-        		ca++;
-        	}
-
+    double *cap;
+    cap = (double *)malloc(numCores*sizeof(double));
+    int ca = 0;
+    while(fscanf(paramFile, "%lf", &cap[ca])!=EOF){
+    	ca++;
+    }
 	//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%THERMAL RESISTANCES
     /*double res[numCores+1][numCores+1];	//Holds R values
 	int cr;
@@ -107,13 +106,12 @@ int main(int argc, const char * argv[]) {
         	res = (double **)malloc((numCores+1)*(numCores+1)*sizeof(double));
         	int cr = 0;
         	int crr = 0;
-        	while(fscanf(paramFile, "%lf", &res[cr][crr])!=EOL){
+        	while(fscanf(paramFile, "%lf", &res[cr][crr])!=EOF){
         		cr++;
         		crr++;
         	}
-
 	// DEBUG
-	/*int ack;
+	int ack;
 	for(ack = 0; ack <numCores+1;ack++){
 		printf("%lf ", res[0][ack]);
 	}
@@ -133,7 +131,7 @@ int main(int argc, const char * argv[]) {
 	for(ack = 0; ack <numCores+1;ack++){
 		printf("%lf ", res[4][ack]);
 	}
-	printf("\n"); //%%%%%%%%%%%%%%%%%%%*/
+	printf("\n"); //%%%%%%%%%%%%%%%%%%%
 	
 	/*int pr;
 	int prr;
@@ -171,14 +169,9 @@ int main(int argc, const char * argv[]) {
 	double *pow;
         	pow = (double *)malloc(numCores*sizeof(double));
         	int pi= 0;
-        	while(fscanf(powFile, "%lf", &pow[pi])!=EOL){
+        	while(fscanf(powFile, "%lf", &pow[pi])!=EOF){
         		pi++;
         	}
-        	int abc;
-        	for(abc = 0; abc<numCores;abc++){
-        		printf("%lf", pow[abc]);
-        	}
-
 
 	//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -186,6 +179,15 @@ int main(int argc, const char * argv[]) {
     int *y; //pointer for dy/dt values
     y = (int *)malloc(numCores*sizeof(double)); //y points to starting address of array of size numCores, values are doubles
         
+    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% AMBIENT TEMP READING
+    if(argc < 3)
+    	ambient = ambient; //use default room temperature = 300k
+    else{
+    	FILE *ambFile = fopen(argv[3], "r");
+    	assert(ambFile != NULL);
+    	fscanf(ambFile, "%lf", &ambient);
+    }
+    printf("%lf\n", ambient);
 
 
     //let the spicy begin, call RK and obtain results
