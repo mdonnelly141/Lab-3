@@ -23,6 +23,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		C03C350F1DD81F1000F3C12D /* amb.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = amb.txt; sourceTree = "<group>"; };
+		C03C35101DD81F1000F3C12D /* param.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = param.txt; sourceTree = "<group>"; };
+		C03C35111DD81F1000F3C12D /* pow.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = pow.txt; sourceTree = "<group>"; };
 		C04F49E71DD3C1BB00592A6B /* compSysProject3 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = compSysProject3; sourceTree = BUILT_PRODUCTS_DIR; };
 		C04F49EA1DD3C1BB00592A6B /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -58,6 +61,9 @@
 			isa = PBXGroup;
 			children = (
 				C04F49EA1DD3C1BB00592A6B /* main.c */,
+				C03C350F1DD81F1000F3C12D /* amb.txt */,
+				C03C35101DD81F1000F3C12D /* param.txt */,
+				C03C35111DD81F1000F3C12D /* pow.txt */,
 			);
 			path = compSysProject3;
 			sourceTree = "<group>";
@@ -246,6 +252,7 @@
 				C04F49F01DD3C1BB00592A6B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
