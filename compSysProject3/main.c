@@ -17,34 +17,24 @@ double *cap;					//array for thermal capacitances
 double **res;					//array for thermal resistances
 double *temp;					//array for temperatures
 double *power;					//array for power values
+double *karr;					//array for intermediate k approximations
+karr = (double*)malloc(4*sizeof(double));
 
 
 //////////////////////Runge-Kutta Algorithm//////////////////////////////////
-//*double *rk(int numCores, double c[], double r[], double p[]){   //returns pointer	
-	/*int i;
-	row = 0; //start at first row
-	printf("%lf", c[row]);*/
-	/*for(i=0; i<*numCores; i++){ //handles interations for K(i,j)
-		col = i;
-		if(row = col)  //checks for core comparison to itself
-			;		   //don't calculate if core is compared to itself	
-		else{
-			k1 = h*f(*numCores, res[row][col], cap[i], pow[i]);  
-			i++;
-		}
-	}
-}	*/
+double *rk(int numCores){   //returns pointer	
+	karr[0] = h*f();
+	//karr[1] = h*f();
+	//karr[2] = h*f();
+	//karr[3] = h*f();
+}	
 /////////////////////////////////////////////////////////////////////////////
 
 //////////////////////Functions utilized within RK/////////////////////////// 
-/*double f(int *currCore, double res[row][col], double cap[i], double pow[i]){
-		double k;
-		/*if(row = col)  //checks for core comparison to itself
-			;		   //don't calculate if core is compared to itself	
-		else
-			double k = (p - sum(currCore))/r;*/
-	//return k;
-//}
+double f(int *currCore, double res[row][col], double cap[i], double pow[i]){
+	double k = pow[i] = 
+	return k;
+}
 
 //double sum(int currCore){
 //	double ans;
@@ -205,10 +195,10 @@ int main(int argc, const char * argv[]) {
 
 
     //let the spicy begin, call RK and obtain results
-    /*int steps;
+    int steps;
     for(steps = 0; steps < 200; steps++){  //200 iterations; 200*h = 1 run through [0-Tau], (Tau - 2Tau], etc
-    	*rk(%numCores, %cap, %res, %pow);
-    }*/
+    	*rk(numCores);
+    }
 
     	
     //*rk(int *numCores, double c[], double r[][], double p[]){  
