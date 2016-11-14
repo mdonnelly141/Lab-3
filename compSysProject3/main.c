@@ -14,66 +14,102 @@ const char EOL = '\n';			//end of line character
 double ambient = 300;			//default ambient temperature of 300k
 double startT = 300;			//starting temperature of cores @ 300k
 double *cap;					//array for thermal capacitances
-double **y;                     //dy/dt value outputs
+double **temp;                     //dtemp/dt value outputs
 double **res;					//array for thermal resistances
-double *temp;					//array for temperatures
+//double *temp;					//array for temperatures
 double *power;					//array for power values
 double **karr;					//array for intermediate k approximations
 
-double f(int numcore, int core, int casey);
-double sum(int total, int currCore, int casex);
+//double f(int numcore, int core, int casey);
+
+double f(double time, int core, int numCores);
+
+double sum(int core, int numCores);
+
+//double sum(int total, int currCore, int casex);
 
 //////////////////////Runge-Kutta Algorithm//////////////////////////////////
 void rk(int numCores, double time, int iteration){   //returns value
-	int test = 0;
+	int currCore = 0;
 	int run;
-    for(run = 0; run < numCores; run++)
-		karr[0][run] = time*f(numCores, run, test);
-    test = 1;
-	for(run = 0; run < numCores; run++)
-		karr[1][run] = time*f(numCores, run, test);
-    test = 2;
-	for(run = 0; run < numCores; run++)
-		karr[2][run] = time*f(numCores, run, test);
-    test = 3;
-	for(run = 0; run < numCores; run++)
-		karr[3][run] = time*f(numCores, run, test);
+//    for(run = 0; run < numCores; run++)
+//		karr[0][run] = h*f(numCores, run, test);
+//    currCore = 1;
+//	for(run = 0; run < numCores; run++)
+//		karr[1][run] = h*f(numCores, run, test);
+//    currCore = 2;
+//	for(run = 0; run < numCores; run++)
+//		karr[2][run] = h*f(numCores, run, test);
+//    currCore = 3;
+//	for(run = 0; run < numCores; run++)
+//		karr[3][run] = h*f(numCores, run, test);
+    
+    for (currCore = 0; currCore<numCores; currCore++) {
+        for (run = 0; run<numCores; run++) {
+            karr[currCore][run] = h*f(time,currCore,numCores);
+        }
+    }
     
     for(run = 0; run<numCores; run++){
-        y[1][run] = y[0][run] + (karr[0][run]+2*karr[1][run]+2*karr[2][run]+karr[3][run])/6.0;
-        y[0][run] = y[1][run];
+        temp[1][run] = temp[0][run] + (karr[0][run]+2*karr[1][run]+2*karr[2][run]+karr[3][run])/6.0;
+        temp[0][run] = temp[1][run];
+        printf("%lf\n",temp[1][0]);
     }
-}	
+    
+}
 /////////////////////////////////////////////////////////////////////////////
 
 //////////////////////Functions utilized within RK/////////////////////////// 
-double f(int numcore, int core, int casey){
-	double k = 0;
-	k = sum(numcore, core, casey);
-	k = (power[core] - k)/cap[core];
-	return k;
+//double f(int numcore, int core, int casey){
+//	double k = 0;
+//	k = sum(numcore, core, casey);
+//	k = (power[core] - k)/cap[core];
+//	return k;
+//}
+
+double f(double time, int core, int numCores){
+    double k = power[core]/cap[core]-sum(core,numCores);
+    return k;
 }
 
-double sum(int total, int currCore, int casex){
-	int cou = 0;
-	double ans = 0;
-	while(cou<total){
-        if(currCore != cou){
-            if(casex == 0) //calculate sum for K1
-                ans += (temp[currCore] - temp[cou])/res[currCore][cou];
-            else if(casex == 1) //calculate sum for k2
-                ans += (((temp[currCore]+(karr[0][currCore])/2)-(temp[cou]+(karr[0][cou])/2))/res[currCore][cou]);
-            else if(casex == 2) //calculate sum for k3
-                ans += (((temp[currCore]+(karr[1][currCore])/2)-(temp[cou]+(karr[1][cou])/2))/res[currCore][cou]);
-            else if(casex == 3) //calculate sum for k4
-                ans += ((temp[currCore]+karr[2][currCore])-(temp[cou]+karr[2][cou]))/res[currCore][cou];
+double sum(int core, int numCores){
+    int currNode;
+    double ans = 0;
+    for(currNode = 0;currNode<numCores;currNode++){
+        if (core!=currNode&&core==0){
+            ans += (temp[0][core]-temp[0][currNode])/(res[core][currNode]*cap[core]);
         }
-        else
-            ;
-        cou++;
-	}
-	return ans;
+        else if(core!=currNode&&core==numCores-1){
+            ans += (((temp[0][core]+karr[core][currNode])-(temp[0][currNode]+karr[core][currNode]))/(res[core][currNode]*cap[core]));
+        }
+        else if(core!=currNode){
+            ans += (((temp[0][core]+karr[core][currNode]/2)-(temp[0][currNode]+karr[core][currNode]/2))/(res[core][currNode]*cap[core]));
+        }
+    }
+    return ans;
 }
+
+//double sum(int total, int currCore, int casex){
+//	int cou = 0;
+//	double ans = 0;
+//	while(cou<total){
+//        if(currCore != cou){
+//            if(casex == 0) //calculate sum for K1
+//                ans += (temp[currCore] - temp[cou])/res[currCore][cou];
+//            else if(casex == 1) //calculate sum for k2
+//                ans += (((temp[currCore]+(karr[0][currCore])/2)-(temp[cou]+(karr[0][cou])/2))/res[currCore][cou]);
+//            else if(casex == 2) //calculate sum for k3
+//                ans += (((temp[currCore]+(karr[1][currCore])/2)-(temp[cou]+(karr[1][cou])/2))/res[currCore][cou]);
+//            else if(casex == 3) //calculate sum for k4
+//                ans += ((temp[currCore]+karr[2][currCore])-(temp[cou]+karr[2][cou]))/res[currCore][cou];
+//        }
+//        else
+//            ;
+//        cou++;
+//        printf("%lf\n",ans);
+//	}
+//	return ans;
+//}
 ////////////////////////////////////////////////////////////////////////////
 
 int powLine(FILE *powFile,int numCores){
@@ -112,7 +148,7 @@ int main(int argc, const char * argv[]) {
     assert(paramFile != NULL); //check that file exists
 
 
-    karr = (double**)calloc(4, sizeof(double*)); //build 2d array for K values
+    karr = (double**)calloc(numCores, sizeof(double*)); //build 2d array for K values
     int kc = 0;
     for(kc = 0; kc<numCores; kc++)
     	karr[kc] = (double*)calloc(numCores, sizeof(double));
@@ -192,7 +228,7 @@ int main(int argc, const char * argv[]) {
 	/*for(ti = 0; ti<numCores;ti++)
 		printf("Core temp is %lf\n", temp[ti]); //DEBUGGG*/ 
 	
-	temp = (double *)malloc(numCores*sizeof(double));
+//	temp = (double *)malloc(numCores*sizeof(double));
 
 	fclose(paramFile);
 
@@ -211,9 +247,7 @@ int main(int argc, const char * argv[]) {
     power = (double *)malloc(numCores*sizeof(double));
 
 	//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-    //double y[4]; //holds dy/dt values
-    //int *y; //pointer for dy/dt values
+    
     int lines = 0;
     int cont = 1;
     while(cont == 1){
@@ -224,13 +258,7 @@ int main(int argc, const char * argv[]) {
     fclose(powFile);
     FILE *powFile2 = fopen(argv[2], "r");
     assert(powFile2 != NULL);
-    
-    y = (double **)malloc(2*sizeof(double*)); //y points to starting address of array of size numCores, values are doubles
-    y[0] = (double*)malloc((numCores)*sizeof(double));
-    y[1] = (double*)malloc((numCores)*sizeof(double));
-    for(i = 0;i<numCores;i++){
-        y[0][i] = temp[i];
-    }
+    powLine(powFile2, numCores);
     
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% AMBIENT TEMP READING
     if(argc < 4)
@@ -243,6 +271,14 @@ int main(int argc, const char * argv[]) {
     printf("room temp is %lf\n", ambient);
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+    temp = (double **)malloc(2*sizeof(double*)); //temp points to starting address of array of size numCores, values are doubles
+    temp[0] = (double*)malloc((numCores+1)*sizeof(double));
+    temp[1] = (double*)malloc((numCores+1)*sizeof(double));
+    for(i = 0;i<numCores+1;i++){
+        temp[0][i] = ambient; // starting temp of the cores is ambient temp
+        temp[1][i] = ambient; // starting temp of the cores is ambient temp
+    }
+    
     //let the spicy begin, call RK and obtain results
     int steps;
     double time = 0;
@@ -250,11 +286,11 @@ int main(int argc, const char * argv[]) {
     rk(numCores,0,0);
     time+=h;
     for(line = 1;line<lines;line++){
-        powLine(powFile2, numCores);
         for(steps = 1; steps <= (1/h); steps++){  //200 iterations; 200*h = 1 run through [0-Tau], [Tau - 2Tau], etc
             rk(numCores,time,steps);
             time += h;
         }
+        powLine(powFile2, numCores);
     }
     	
     //*rk(int *numCores, double c[], double r[][], double p[]){  
