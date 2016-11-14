@@ -61,11 +61,11 @@ double sum(int total, int currCore, int casex){
         if(currCore != cou){
             if(casex == 0) //calculate sum for K1
                 ans += (temp[currCore] - temp[cou])/res[currCore][cou];
-            if(casex == 1) //calculate sum for k2
+            else if(casex == 1) //calculate sum for k2
                 ans += (((temp[currCore]+(karr[0][currCore])/2)-(temp[cou]+(karr[0][cou])/2))/res[currCore][cou]);
-            if(casex == 2) //calculate sum for k3
+            else if(casex == 2) //calculate sum for k3
                 ans += (((temp[currCore]+(karr[1][currCore])/2)-(temp[cou]+(karr[1][cou])/2))/res[currCore][cou]);
-            if(casex == 3) //calculate sum for k4
+            else if(casex == 3) //calculate sum for k4
                 ans += ((temp[currCore]+karr[2][currCore])-(temp[cou]+karr[2][cou]))/res[currCore][cou];
         }
         else
@@ -220,7 +220,11 @@ int main(int argc, const char * argv[]) {
         cont = powLine(powFile, numCores);
         lines++;
     }
-    rewind(powFile);
+    //////////////////////////////rewind(powFile);
+    fclose(powFile);
+    FILE *powFile2 = fopen(argv[2], "r");
+    assert(powFile2 != NULL);
+    
     y = (double **)malloc(2*sizeof(double*)); //y points to starting address of array of size numCores, values are doubles
     y[0] = (double*)malloc((numCores)*sizeof(double));
     y[1] = (double*)malloc((numCores)*sizeof(double));
@@ -246,7 +250,7 @@ int main(int argc, const char * argv[]) {
     rk(numCores,0,0);
     time+=h;
     for(line = 1;line<lines;line++){
-        powLine(powFile, numCores);
+        powLine(powFile2, numCores);
         for(steps = 1; steps <= (1/h); steps++){  //200 iterations; 200*h = 1 run through [0-Tau], [Tau - 2Tau], etc
             rk(numCores,time,steps);
             time += h;
