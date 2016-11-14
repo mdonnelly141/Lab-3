@@ -22,16 +22,17 @@ double **karr;					//array for intermediate k approximations
 
 //double f(int numcore, int core, int casey);
 
-double f(double time, int core, int numCores);
+double f(int kSub1, int kSub2, int numCores);
 
-double sum(int core, int numCores);
+double sum(int run, int core, int numCores);
 
 //double sum(int total, int currCore, int casex);
 
 //////////////////////Runge-Kutta Algorithm//////////////////////////////////
 void rk(int numCores, double time, int iteration){   //returns value
-	int currCore = 0;
-	int run;
+	int kSub1; // the value of k's first subscript
+    int kSub2 = 0; // the valu of k's second subscript
+    
 //    for(run = 0; run < numCores; run++)
 //		karr[0][run] = h*f(numCores, run, test);
 //    currCore = 1;
@@ -44,22 +45,18 @@ void rk(int numCores, double time, int iteration){   //returns value
 //	for(run = 0; run < numCores; run++)
 //		karr[3][run] = h*f(numCores, run, test);
     
-    for (currCore = 0; currCore<numCores; currCore++) {
-        for (run = 0; run<numCores; run++) {
-            karr[currCore][run] = h*f(time,currCore,numCores);
+    for (kSub1 = 0; kSub1<4; kSub1++) {
+        for (kSub2 = 0; kSub2<numCores; kSub2++) {
+            karr[kSub1][kSub2] = h*f(kSub1,kSub2,numCores);
+//            printf("%lf ",karr[kSub1][kSub2]);
         }
+        printf("\n");
     }
-    
+    int run;
     for(run = 0; run<numCores; run++){
-        double kSum = karr[0][run]+karr[numCores-1][run]; // holds sum of k values
-        int kAmount = 1; // holds total number of k values, also used to iterate the for loop
-        for(kAmount = 1; kAmount<numCores-1; kAmount++){
-            kSum += 2*karr[kAmount][run];
-        }
-        double kTotal = kSum/(2*kAmount);
-        temp[1][run] = temp[0][run] + kTotal;
+        temp[1][run] = temp[0][run] + (karr[0][run]+2*karr[1][run]+2*karr[2][run]+karr[3][run])/6.0;
         temp[0][run] = temp[1][run];
-        printf("%lf\n",temp[1][0]);
+        printf("%lf\n",temp[1][run]);
     }
 }
 /////////////////////////////////////////////////////////////////////////////
@@ -72,23 +69,23 @@ void rk(int numCores, double time, int iteration){   //returns value
 //	return k;
 //}
 
-double f(double time, int core, int numCores){
-    double k = power[core]/cap[core]-sum(core,numCores);
+double f(int kSub1, int kSub2, int numCores){
+    double k = power[kSub2]/cap[kSub2]-sum(kSub1,kSub2,numCores);
     return k;
 }
 
-double sum(int core, int numCores){
+double sum(int kSub1, int kSub2, int numCores){
     int currNode;
     double ans = 0;
     for(currNode = 0;currNode<numCores;currNode++){
-        if (core!=currNode&&core==0){
-            ans += (temp[0][core]-temp[0][currNode])/(res[core][currNode]*cap[core]);
+        if (kSub2!=currNode&&kSub1==0){
+            ans += (temp[0][kSub1]-temp[0][currNode])/(res[kSub1][currNode]*cap[kSub1]);
         }
-        else if(core!=currNode&&core==numCores-1){
-            ans += (((temp[0][core]+karr[core][currNode])-(temp[0][currNode]+karr[core][currNode]))/(res[core][currNode]*cap[core]));
+        else if(kSub2!=currNode&&kSub1==3){
+            ans += (((temp[0][kSub1]+karr[kSub1-1][currNode])-(temp[0][currNode]+karr[kSub1-1][currNode]))/(res[kSub1][currNode]*cap[kSub1]));
         }
-        else if(core!=currNode){
-            ans += (((temp[0][core]+karr[core][currNode]/2)-(temp[0][currNode]+karr[core][currNode]/2))/(res[core][currNode]*cap[core]));
+        else if(kSub2!=currNode){
+            ans += (((temp[0][kSub1]+karr[kSub1-1][currNode]/2)-(temp[0][currNode]+karr[kSub1-1][currNode]/2))/(res[kSub1][currNode]*cap[kSub1]));
         }
     }
     return ans;
@@ -153,7 +150,7 @@ int main(int argc, const char * argv[]) {
     assert(paramFile != NULL); //check that file exists
 
 
-    karr = (double**)calloc(numCores, sizeof(double*)); //build 2d array for K values
+    karr = (double**)calloc(4, sizeof(double*)); //build 2d array for K values
     int kc = 0;
     for(kc = 0; kc<numCores; kc++)
     	karr[kc] = (double*)calloc(numCores, sizeof(double));
