@@ -14,7 +14,7 @@ const char EOL = '\n';			//end of line character
 double ambient = 300;			//default ambient temperature of 300k
 double startT = 300;			//starting temperature of cores @ 300k
 double *cap;					//array for thermal capacitances
-double **y;                      //dy/dt value outputs
+double **y;                     //dy/dt value outputs
 double **res;					//array for thermal resistances
 double *temp;					//array for temperatures
 double *power;					//array for power values
@@ -27,7 +27,7 @@ double sum(int total, int currCore, int casex);
 void rk(int numCores, double time, int iteration){   //returns value
 	int test = 0;
 	int run;
-	for(run = 0; run < numCores; run++)
+    for(run = 0; run < numCores; run++)
 		karr[0][run] = time*f(numCores, run, test);
     test = 1;
 	for(run = 0; run < numCores; run++)
@@ -40,7 +40,7 @@ void rk(int numCores, double time, int iteration){   //returns value
 		karr[3][run] = time*f(numCores, run, test);
     
     for(run = 0; run<numCores; run++){
-        y[1][run] = y[0][run] + (karr[0][run]+2*karr[1][run]+2*karr[2][run]+karr[3][run])/6;
+        y[1][run] = y[0][run] + (karr[0][run]+2*karr[1][run]+2*karr[2][run]+karr[3][run])/6.0;
         y[0][run] = y[1][run];
     }
 }	
@@ -55,9 +55,9 @@ double f(int numcore, int core, int casey){
 }
 
 double sum(int total, int currCore, int casex){
-	int cou;
-	double ans;
-	for(cou = 0; cou<total; cou++){
+	int cou = 0;
+	double ans = 0;
+	while(cou<total){
         if(currCore != cou){
             if(casex == 0) //calculate sum for K1
                 ans += (temp[currCore] - temp[cou])/res[currCore][cou];
@@ -70,6 +70,7 @@ double sum(int total, int currCore, int casex){
         }
         else
             ;
+        cou++;
 	}
 	return ans;
 }
@@ -242,13 +243,14 @@ int main(int argc, const char * argv[]) {
     int steps;
     double time = 0;
     int line;
+    rk(numCores,0,0);
+    time+=h;
     for(line = 1;line<lines;line++){
         powLine(powFile, numCores);
-        for(steps = 0; steps < (1/h); steps++){  //200 iterations; 200*h = 1 run through [0-Tau], [Tau - 2Tau], etc
+        for(steps = 1; steps <= (1/h); steps++){  //200 iterations; 200*h = 1 run through [0-Tau], [Tau - 2Tau], etc
             rk(numCores,time,steps);
             time += h;
         }
-        printf("%lf", y[1][0]);
     }
     	
     //*rk(int *numCores, double c[], double r[][], double p[]){  
