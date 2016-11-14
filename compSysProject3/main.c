@@ -51,11 +51,16 @@ void rk(int numCores, double time, int iteration){   //returns value
     }
     
     for(run = 0; run<numCores; run++){
-        temp[1][run] = temp[0][run] + (karr[0][run]+2*karr[1][run]+2*karr[2][run]+karr[3][run])/6.0;
+        double kSum = karr[0][run]+karr[numCores-1][run]; // holds sum of k values
+        int kAmount = 1; // holds total number of k values, also used to iterate the for loop
+        for(kAmount = 1; kAmount<numCores-1; kAmount++){
+            kSum += 2*karr[kAmount][run];
+        }
+        double kTotal = kSum/(2*kAmount);
+        temp[1][run] = temp[0][run] + kTotal;
         temp[0][run] = temp[1][run];
         printf("%lf\n",temp[1][0]);
     }
-    
 }
 /////////////////////////////////////////////////////////////////////////////
 
