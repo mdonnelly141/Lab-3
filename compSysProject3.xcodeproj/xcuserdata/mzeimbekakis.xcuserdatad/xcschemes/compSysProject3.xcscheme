@@ -74,6 +74,10 @@
             argument = "amb.txt"
             isEnabled = "NO">
          </CommandLineArgument>
+         <CommandLineArgument
+            argument = "output.txt"
+            isEnabled = "YES">
+         </CommandLineArgument>
       </CommandLineArguments>
       <AdditionalOptions>
       </AdditionalOptions>
