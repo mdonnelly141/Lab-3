@@ -13,18 +13,25 @@
 const char EOL = '\n';			//end of line character
 double ambient = 300;			//default ambient temperature of 300k
 double startT = 300;			//starting temperature of cores @ 300k
+double age = 0;					//starting age of cores
 double *cap;					//array for thermal capacitances
-double **temp;                     //dtemp/dt value outputs
+double **temp;                  //dtemp/dt value outputs
 double **res;					//array for thermal resistances
 //double *temp;					//array for temperatures
 double *power;					//array for power values
-double **karr;					//array for intermediate k approximations
+double **karr;					//array for intermediate k approximations for temperature
+double **karr2;					//array for intermediate k approximations for age
+double **agearr;					//array for age values
 
 //double f(int numcore, int core, int casey);
 
 double f(int kSub1, int kSub2, int numCores);
 
+double f2(int kSub1, int kSub2);
+
 double sum(int run, int core, int numCores);
+
+
 
 //double sum(int total, int currCore, int casex);
 
@@ -50,11 +57,40 @@ void rk(int numCores, double time){   //returns value
     }
 }
 
+void rkAge(int numCores, double time){   //returns value
+	int kSub1; // the value of k's first subscript
+    int kSub2 = 0; // the value of k's second subscript
+    
+    for (kSub1 = 0; kSub1<4; kSub1++) {
+        for (kSub2 = 0; kSub2<numCores; kSub2++) {
+            karr[kSub1][kSub2] = h*f2(kSub1, kSub2);
+            //karr[kSub1][kSub2] = h*f(kSub1,kSub2,numCores);
+			//printf("%lf ",karr[kSub1][kSub2]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+    int run;
+    for(run = 0; run<numCores; run++){
+        agearr[1][run] = agearr[0][run] + (karr[0][run]+2*karr[1][run]+2*karr[2][run]+karr[3][run])/6.0;
+        agearr[0][run] = agearr[1][run];
+        printf("%lf\n",agearr[1][run]);
+    }
+}
+
 //////////////////////Functions utilized within RK///////////////////////////
 
-double f(int kSub1, int kSub2, int numCores){ //pass current K, current core, number of cores
+double f(int kSub1, int kSub2, int numCores){ //pass current core i, current core j, number of cores
     double k = (power[kSub1]/cap[kSub1])-sum(kSub1,kSub2,numCores);
     return k;
+}
+
+double f2(int kSub1, int kSub2){ //pass current core i, current core j, number of cores
+	double x = -EA/(BOLTZ*temp[1][kSub1]);
+	double x2 = -EA/(BOLTZ*temp[1][kSub2]);
+
+	double k = exp(x)/exp(x2); 
+	return k;	
 }
 
 double sum(int kSub1, int kSub2, int numCores){
@@ -120,7 +156,9 @@ int main(int argc, const char * argv[]) {
     for(kc = 0; kc<numCores; kc++)
     	karr[kc] = (double*)calloc(numCores, sizeof(double));
 
-    
+    karr2 = (double**)calloc(4, sizeof(double*)); //build 2d array for K values
+    for(kc = 0; kc<numCores; kc++)
+    	karr[kc] = (double*)calloc(numCores, sizeof(double));
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%THERMAL CAPACITANCES
     
     cap = (double *)malloc(numCores*sizeof(double));
@@ -195,6 +233,15 @@ int main(int argc, const char * argv[]) {
         temp[0][i] = ambient; // starting temp of the cores is ambient temp
         temp[1][i] = ambient; // starting temp of the cores is ambient temp
     }
+
+    agearr = (double **)malloc(2*sizeof(double*)); //agearr points to starting address of array of size numCores, values are doubles
+    agearr[0] = (double*)malloc((numCores+1)*sizeof(double));
+    agearr[1] = (double*)malloc((numCores+1)*sizeof(double));
+    for(i = 0;i<numCores+1;i++){
+        agearr[0][i] = age; // starting age of the cores is 0
+        agearr[1][i] = age; // starting age of the cores is 0
+    }
+
     
     //let the spicy begin, call RK and obtain results
     int steps;
@@ -205,7 +252,7 @@ int main(int argc, const char * argv[]) {
     for(line = 1;line<lines;line++){
         for(steps = 1; steps <= (1/h); steps++){  //200 iterations; 200*h = 1 run through [0-Tau], [Tau - 2Tau], etc
             rk(numCores,time); //returns temp values for current interval of time
-            
+            rkAge(numCores, time);
             //write to output file hello
             
             time += h;
